@@ -1,5 +1,5 @@
 CC      = gcc
-CFLAGS  = -Wall -O0 -g
+CFLAGS  = -Wall -Wextra -O0 -g
 TARGET  = conway
 
 SOURCES = conway.c
