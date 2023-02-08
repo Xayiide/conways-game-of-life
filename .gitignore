@@ -1,0 +1,13 @@
+# intermediarios
+*.swp
+
+# objetos
+*.o
+
+# IDE
+.project
+.cproject
+.settings
+
+# Binario final
+conway
