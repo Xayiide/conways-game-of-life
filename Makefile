@@ -1,23 +1,27 @@
-CC      = gcc
-CFLAGS  = -Wall -Wextra -O0 -g
-TARGET  = conway
+CC     = g++
+CFLAGS = -g -Wall -Wextra -Wpedantic
+LFLAGS = -lSDL2main -lSDL2
 
-SOURCES = conway.c
-OBJECTS = $(SOURCES:.c=.o)
+.PHONY: all clean re run
+
+TGT  = main
+SRCS = main.cpp celula.cpp
+OBJS = $(SRCS:.cpp=.o)
+
+all: $(TGT)
 
 
-.PHONY: all clean re
+$(TGT): $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) $(LFLAGS) -o $(TGT)
 
-
-all: $(TARGET)
-
-$(TARGET): $(OBJECTS)
-	$(CC) $(CFLAGS) -o $@  $^
-	@rm -f $(OBJECTS)
-
+%.o: %.cpp
+	$(CC) $(CFLAGS) $(LFLAGS) -c $^ -o $@ 
 
 clean:
-	@rm -f $(TARGET)
+	@rm -f $(TGT) $(OBJS)
 	@echo "clean"
 
 re: clean all
+
+run: all
+	./$(TGT)
