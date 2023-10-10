@@ -5,7 +5,7 @@ LFLAGS = -lSDL2main -lSDL2
 .PHONY: all clean re run
 
 TGT  = main
-SRCS = main.cpp celula.cpp
+SRCS = main.cpp
 OBJS = $(SRCS:.cpp=.o)
 
 all: $(TGT)
