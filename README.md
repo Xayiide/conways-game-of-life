@@ -7,5 +7,11 @@ Implementación del juego de la vida de conway en C sin librerías extra (sólo 
 
 ![](https://github.com/Xayiide/conways-game-of-life/blob/main/assets/demo.gif)
 
+# Controles:
+ - Espacio: Detiene o pone en marcha la simulación.
+ - 1: Avanza una generación.
+ - 0: Limpia la pantalla.
+ - Click: Cambia el estado de la célula seleccionada.
+
 # TODO:
  - Cambiar los parámetros en #defines por valores en tiempo de ejecución que se pasen por parámetro
