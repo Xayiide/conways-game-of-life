@@ -2,6 +2,7 @@
 #include <cstdlib>   /* exit, rand, srand */
 #include <time.h>    /* time              */
 #include <stdint.h>  /* uint32_t          */
+#include <chrono>    /* high res clock    */
 
 #include <SDL2/SDL.h>
 
@@ -11,6 +12,7 @@
 #define PXANCHO    ANCHO / PXFACTOR
 #define PXALTO     ALTO  / PXFACTOR
 #define NUMCELULAS PXANCHO * PXALTO
+#define GEN_SPEED  500 /* ms */
 
 #define VIVA   true
 #define MUERTA false
@@ -61,7 +63,7 @@ uint32_t vecinosVivos(bool celulas[PXALTO][PXANCHO], int f, int c)
 
     if (noSeSale(f, c) == false)
     {
-        fprintf(stderr, "Fuera de rango\n");
+        std::cerr << "Fuera de rango\n";
         exit(EXIT_FAILURE);
     }
 
@@ -147,6 +149,8 @@ int main()
     bool          celulas[PXALTO][PXANCHO];
     SDL_Point     mouse;
 
+    std::chrono::duration<double> max = std::chrono::milliseconds(GEN_SPEED);
+
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0)
     {
         std::cerr << "Error en la inicialización de SDL.\n";
@@ -173,6 +177,7 @@ int main()
 
     randCelulas(celulas);
 
+    auto t1 = std::chrono::high_resolution_clock::now();
     while (run)
     {
         while (SDL_PollEvent(&e))
@@ -232,15 +237,20 @@ int main()
             }
 
         }
-    
-        imprime(celulas, rnd, mouse);
+        auto t2 = std::chrono::high_resolution_clock::now();
 
-        if (sim == true)
-            actualiza(celulas);
+        imprime(celulas, rnd, mouse);
+        if ((t2 - t1) > max)
+        {
+            t1 = t2; /* Hay desviación local. TODO: Delay until? */
+            if (sim == true)
+                actualiza(celulas);
+        }
+
 
 
         SDL_RenderPresent(rnd);
-        SDL_Delay(30);
+        SDL_Delay(15);
 
     }
 
