@@ -5,7 +5,7 @@
 
 #include <SDL2/SDL.h>
 
-#define PXFACTOR   60
+#define PXFACTOR   10
 #define ANCHO      600
 #define ALTO       600
 #define PXANCHO    ANCHO / PXFACTOR
@@ -15,6 +15,14 @@
 #define VIVA   true
 #define MUERTA false
 
+void limpia(bool celulas[PXALTO][PXANCHO])
+{
+    int f, c;
+
+    for (f = 0; f < PXALTO; f++)
+        for (c = 0; c < PXALTO; c++)
+            celulas[f][c] = MUERTA;
+}
 
 bool evalua(bool celula, int vvivos)
 {
@@ -190,6 +198,8 @@ int main()
                         actualiza(celulas);
                         imprime(celulas, rnd, mouse);
                         break;
+                    case SDLK_0:
+                        limpia(celulas);
                 }
             }
             else if (e.type == SDL_MOUSEMOTION)
@@ -230,7 +240,7 @@ int main()
 
 
         SDL_RenderPresent(rnd);
-        SDL_Delay(500);
+        SDL_Delay(30);
 
     }
 
