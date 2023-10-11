@@ -5,9 +5,9 @@
 
 #include <SDL2/SDL.h>
 
-#define PXFACTOR   100
-#define ANCHO      1000
-#define ALTO       1000
+#define PXFACTOR   60
+#define ANCHO      600
+#define ALTO       600
 #define PXANCHO    ANCHO / PXFACTOR
 #define PXALTO     ALTO  / PXFACTOR
 #define NUMCELULAS PXANCHO * PXALTO
@@ -69,6 +69,25 @@ uint32_t vecinosVivos(bool celulas[PXALTO][PXANCHO], int f, int c)
     return vvivos;
 }
 
+void imprime(bool celulas[PXALTO][PXANCHO], SDL_Renderer *rnd, SDL_Point mouse)
+{
+    int f, c;
+
+    SDL_SetRenderDrawColor(rnd, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderClear(rnd);
+
+    SDL_SetRenderDrawColor(rnd, 255, 255, 255, SDL_ALPHA_OPAQUE);
+    for (f = 0; f < PXALTO; f++)
+    {
+        for (c = 0; c < PXANCHO; c++)
+            if (celulas[f][c] == true)
+                SDL_RenderDrawPoint(rnd, f, c);
+    }
+    SDL_SetRenderDrawColor(rnd, 0, 255, 255, SDL_ALPHA_OPAQUE);
+    SDL_RenderDrawPoint(rnd, mouse.x, mouse.y);
+
+}
+
 void actualiza(bool celulas[PXALTO][PXANCHO])
 {
     bool nueva[PXALTO][PXANCHO];
@@ -116,8 +135,9 @@ int main()
     SDL_Renderer *rnd = nullptr;
     SDL_Window   *win = nullptr;
     bool          run = true;
-    int           f, c;
+    bool          sim = true;
     bool          celulas[PXALTO][PXANCHO];
+    SDL_Point     mouse;
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0)
     {
@@ -160,28 +180,57 @@ int main()
                     case SDLK_q:
                         run = false;
                         break;
+                    case SDLK_SPACE:
+                        if (sim == true)
+                            sim = false;
+                        else
+                            sim = true;
+                        break;
+                    case SDLK_1:
+                        actualiza(celulas);
+                        imprime(celulas, rnd, mouse);
+                        break;
                 }
+            }
+            else if (e.type == SDL_MOUSEMOTION)
+            {
+                int auxx, auxy, x, y;
+                /* Averiguar posición en la que estamos */
+                SDL_GetMouseState(&auxx, &auxy);
+                /* Nos devuelve el píxel en rango 0-ALTO, 0-ANCHO         */
+                /* Hacemos módulo PXFACTOR para obtener el pixel adecuado */
+                x = (auxx / (int) PXFACTOR);
+                y = (auxy / (int) PXFACTOR);
+
+                /* Colorearlo de azul */
+                mouse.x = x;
+                mouse.y = y;
+
+            }
+            else if (e.type == SDL_MOUSEBUTTONDOWN)
+            {
+                int auxx, auxy, x, y;
+                /* Averiguar el pixel en el que estamos */
+                SDL_GetMouseState(&auxx, &auxy);
+                x = (auxx / (int) PXFACTOR);
+                y = (auxy / (int) PXFACTOR);
+
+                if (celulas[x][y] == VIVA)
+                    celulas[x][y] = MUERTA;
+                else
+                    celulas[x][y] = VIVA;
             }
 
         }
     
-        SDL_SetRenderDrawColor(rnd, 0, 0, 0, SDL_ALPHA_OPAQUE);
-        SDL_RenderClear(rnd);
+        imprime(celulas, rnd, mouse);
 
-        SDL_SetRenderDrawColor(rnd, 255, 255, 255, SDL_ALPHA_OPAQUE);
-        for (f = 0; f < PXALTO; f++)
-        {
-            for (c = 0; c < PXANCHO; c++)
-                if (celulas[f][c] == true)
-                    SDL_RenderDrawPoint(rnd, f, c);
-        }
-
-        actualiza(celulas);
-
+        if (sim == true)
+            actualiza(celulas);
 
 
         SDL_RenderPresent(rnd);
-        SDL_Delay(200);
+        SDL_Delay(500);
 
     }
 
