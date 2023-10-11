@@ -1,0 +1,15 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "c-std" ]
+  pull_request:
+    branches: [ "c-std" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: compile
+      run: make
