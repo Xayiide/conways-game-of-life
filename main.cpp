@@ -13,6 +13,7 @@
 #define PXALTO     ALTO  / PXFACTOR
 #define NUMCELULAS PXANCHO * PXALTO
 #define GEN_SPEED  500 /* ms */
+#define REFRESH_RT 15  /* ms */
 
 #define VIVA   true
 #define MUERTA false
@@ -147,7 +148,9 @@ int main()
     bool          run = true;
     bool          sim = true;
     bool          celulas[PXALTO][PXANCHO];
+    bool          mouse_pressed;
     SDL_Point     mouse;
+    SDL_Point     mouse_last = {0, 0};
 
     std::chrono::duration<double> max = std::chrono::milliseconds(GEN_SPEED);
 
@@ -224,11 +227,38 @@ int main()
             }
             else if (e.type == SDL_MOUSEBUTTONDOWN)
             {
-                int auxx, auxy, x, y;
-                /* Averiguar el pixel en el que estamos */
-                SDL_GetMouseState(&auxx, &auxy);
-                x = (auxx / (int) PXFACTOR);
-                y = (auxy / (int) PXFACTOR);
+                mouse_pressed = true;
+            }
+            else if (e.type == SDL_MOUSEBUTTONUP)
+            {
+                mouse_pressed = false;
+            }
+
+
+        }
+        auto t2 = std::chrono::high_resolution_clock::now();
+
+        if (mouse_pressed)
+        {
+            int auxx, auxy, x, y;
+            /* Averiguar el pixel en el que estamos */
+            SDL_GetMouseState(&auxx, &auxy);
+            x = (auxx / (int) PXFACTOR);
+            y = (auxy / (int) PXFACTOR);
+
+            /* EL siguiente código es para impedir que al dejar pulsado sobre
+             * la misma célula, ésta vaya cambiando el valor invariablemente
+             * cada REFRESH_RT milisegundos (muchas veces por segundo) */
+            if (x == mouse_last.x && y == mouse_last.y)
+            {
+                /* estamos dentro de la misma célula que antes. Ignora */
+            }
+            else
+            {
+                /* Hemos cambiado de célula. Actualizamos la última y cambiamos
+                 * el estado de aquella sobre la que estamos */
+                mouse_last.x = x;
+                mouse_last.y = y;
 
                 if (celulas[x][y] == VIVA)
                     celulas[x][y] = MUERTA;
@@ -237,7 +267,6 @@ int main()
             }
 
         }
-        auto t2 = std::chrono::high_resolution_clock::now();
 
         imprime(celulas, rnd, mouse);
         if ((t2 - t1) > max)
@@ -250,7 +279,7 @@ int main()
 
 
         SDL_RenderPresent(rnd);
-        SDL_Delay(15);
+        SDL_Delay(REFRESH_RT);
 
     }
 
