@@ -232,6 +232,8 @@ int main()
             else if (e.type == SDL_MOUSEBUTTONUP)
             {
                 mouse_pressed = false;
+                mouse_last.x  = 0;
+                mouse_last.y  = 0;
             }
 
 
