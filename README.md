@@ -16,3 +16,7 @@ Implementación del juego de la vida de conway en C sin librerías extra (sólo 
 
 # TODO:
  - Cambiar los parámetros en #defines por valores en tiempo de ejecución que se pasen por parámetro
+
+# Requisitos
+## libsdl2-dev
+`sudo apt install libsdl2-dev`
